@@ -140,12 +140,10 @@ Download all model weights from 🤗 HuggingFace:
 👉 **[https://huggingface.co/Chuhaojin/SentiAvatar](https://huggingface.co/Chuhaojin/SentiAvatar)**
 
 ```bash
-# Option 1: Using git lfs
-git lfs install
-git clone https://huggingface.co/Chuhaojin/SentiAvatar checkpoints/
-
-# Option 2: Using huggingface-cli
-pip install huggingface_hub
+# Use huggingface-cli — it overlays into the existing (non-empty) checkpoints/
+# directory. `git clone … checkpoints/` will fail because the in-tree
+# checkpoints/ already contains a README and sub-folder placeholders.
+pip install -U "huggingface_hub[cli]"
 huggingface-cli download Chuhaojin/SentiAvatar --local-dir checkpoints/
 ```
 
@@ -169,11 +167,11 @@ Before running batch inference, you need to preprocess the raw dataset to genera
 
 ```bash
 # Preprocess all data (audio features + audio tokens + motion tokens)
-python scripts/preprocess_data.py --all --device cuda:0
+python motion_generation/scripts/preprocess_data.py --all --device cuda:0
 
 # Or separately:
-python scripts/preprocess_data.py --audio   # HuBERT features + K-means tokens
-python scripts/preprocess_data.py --motion  # RVQVAE motion tokens
+python motion_generation/scripts/preprocess_data.py --audio   # HuBERT features + K-means tokens
+python motion_generation/scripts/preprocess_data.py --motion  # RVQVAE motion tokens
 ```
 
 This generates three directories under `data/`:
@@ -187,7 +185,7 @@ Run inference on the entire test set and generate BVH/JSON outputs:
 
 ```bash
 # Step 1: Preprocess data (if not done)
-python scripts/preprocess_data.py --all
+python motion_generation/scripts/preprocess_data.py --all
 
 # Step 2: Start vLLM service (background)
 bash scripts/start_vllm_server.sh checkpoints/llm 8095 0

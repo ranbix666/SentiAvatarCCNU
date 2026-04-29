@@ -134,10 +134,10 @@ else
     log "vLLM pid $(cat "${PID_FILE}") — waiting for readiness (this can take 60–120 s)…"
 fi
 
-# Readiness: Flask logs "Running on http://…:<PORT>" once ready.
+# Readiness: poll the Flask /health endpoint that vllm_server.py exposes.
 # Cap the wait at ~5 minutes so a broken start aborts cleanly.
 deadline=$(( $(date +%s) + 300 ))
-until grep -q "Running on http" "${LOG_FILE}" 2>/dev/null; do
+until curl -fsS "http://127.0.0.1:${VLLM_PORT}/health" >/dev/null 2>&1; do
     if ! kill -0 "$(cat "${PID_FILE}")" 2>/dev/null; then
         die "vLLM process died during startup. See ${LOG_FILE}."
     fi

@@ -21,7 +21,7 @@ app.json.sort_keys = False
 
 # 解析参数
 parser = argparse.ArgumentParser()
-parser.add_argument('--port', type=int, default=8081)
+parser.add_argument('--port', type=int, default=8095)
 parser.add_argument('--model_path', type=str)
 args = parser.parse_args()
 
